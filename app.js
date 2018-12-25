@@ -6,8 +6,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const pokeMartRoutes = require('./routes/pokemart');
+const habitatRoutes = require('./routes/habitats');
+const trainerRoutes = require('./routes/trainer');
 
 app.use('/pokemart', pokeMartRoutes);
+app.use('/trainer', trainerRoutes);
+app.use('/habitat', habitatRoutes);
 
 app.use(function(req, res, next) {
   let err = new Error('Page not found');

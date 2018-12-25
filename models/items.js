@@ -7,10 +7,10 @@ class PokeMart {
     this.inventory = {};
     this.stockMart();
   }
-  static stockMart() {
+  static async stockMart() {
     // Fills inventory with entries from the our database for items
   }
-  static getItems() {
+  static async getItems() {
     // All items
     // https://pokeapi.co/api/v2/item-category/
     // Pokeballs
@@ -23,7 +23,7 @@ class PokeMart {
     // Query pokemon api for all the existing items and prices, return a array with key of item names: { item name, price, description}
     // [] item name 1:{ item name, price, description }, item name 2: {item name, price, description}... etc]
   }
-  static getItem(itemName) {
+  static async getItem(itemName) {
     // Gets data for an item in the Pokemart
   }
 }
