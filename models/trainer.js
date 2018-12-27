@@ -26,10 +26,40 @@ class Trainer {
     );
     return result.rows[0];
   }
-  buyItem(item) {}
-  sellItem(item) {}
-  changePartyPokemon(slot1, slot2) {}
-  upateCaughtPokemon(pokemon) {}
+
+  buyItem(item, quantity) {
+    if (this.money < quantity * item.price) {
+      throw new Error('You do not have enough money!');
+    }
+    let inventorySlot = this.inventory[item.name] || { quantity: 0, item };
+    inventorySlot.quantity += quantity;
+    return inventorySlot;
+  }
+
+  sellItem(item, quantity) {
+    if (!this.inventory[item.name]) {
+      throw new Error(`You do not have any ${item.name}!`);
+    }
+    let inventoryQuantity = this.inventory[item.name].quantity;
+    inventoryQuantity = Math.max(0, inventoryQuantity - quantity);
+    return inventoryQuantity;
+  }
+
+  changePartyPokemon(slot1, slot2) {
+    this.partyPokemon[slot1] = [
+      this.partyPokemon[slot2],
+      (this.partyPokemon[slot2] = this.partyPokemon[slot2])
+    ][0];
+  }
+
+  upateCaughtPokemon(pokemon) {
+    let pokemonSlot = this.caughtPokemon[pokemon.species];
+    if (!pokemonSlot) {
+      pokemonSlot = [];
+    }
+    pokemonSlot.push(pokemon);
+    return pokemonSlot;
+  }
 }
 
 module.exports = Trainer;
