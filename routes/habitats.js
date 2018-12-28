@@ -1,6 +1,5 @@
 const express = require('express');
 const router = new express.Router();
-const { PokeMart, PokeBall, BattleItem } = require('../models/items');
 // const jwt = require('jsonwebtoken');
 // const env = require('../config');
 

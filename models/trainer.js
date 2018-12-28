@@ -52,7 +52,7 @@ class Trainer {
     ][0];
   }
 
-  upateCaughtPokemon(pokemon) {
+  updateCaughtPokemon(pokemon) {
     let pokemonSlot = this.caughtPokemon[pokemon.species];
     if (!pokemonSlot) {
       pokemonSlot = [];
