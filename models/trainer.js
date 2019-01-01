@@ -19,6 +19,13 @@ class Trainer {
     throw new Error('You cannot set the id property of a trainer');
   }
 
+  static async getTrainer(name) {
+    let result = await db.query(`SELECT * FROM trainers WHERE name = $1`, [
+      name
+    ]);
+    return result.rows[0];
+  }
+
   static async create(name) {
     let result = await db.query(
       `INSERT INTO trainers () VALUES () RETURNING *`,
