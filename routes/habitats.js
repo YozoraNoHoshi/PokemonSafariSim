@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const router = new express.Router();
+const Habitat = require('../models/habitat');
 // const jwt = require('jsonwebtoken');
 // const env = require('../config');
 
