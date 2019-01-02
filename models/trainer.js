@@ -32,10 +32,11 @@ class Trainer {
 
   static async getAll() {
     let result = await db.query(`SELECT * FROM trainers`);
-    return result.rows;
+    let trainers = result.rows.map(r => new Trainer(r));
+    return trainers;
   }
 
-  static async getTrainer({ name }) {
+  static async getTrainer(name) {
     let resultRows = await checkIfDataExists({
       table: 'trainers',
       key: 'name',
@@ -50,30 +51,21 @@ class Trainer {
       `INSERT INTO trainers (name, money) VALUES ($1, $2) RETURNING *`,
       [name, startingMoney]
     );
-    return result.rows[0];
+    return new Trainer(result.rows[0]);
   }
 
   // Inventory/Pokemon is handled in a separate function
-  static async updateMoney({ money }) {
-    let trainer = await checkIfDataExists({
-      table: 'trainers',
-      key: 'name',
-      value: name
-    })[0];
-    if (!money) money = trainer.money;
-    let result = await db.query(`UPDATE trainers SET money = $1 RETURNING *`, [
-      money
-    ]);
-    return new Trainer(result.rows[0]);
-  }
-  async updateMoney() {
-    let result = await db.query(`UPDATE trainers SET money = $1 RETURNING *`, [
-      this.money
-    ]);
-    return result.rows[0];
+  async updateMoney(money) {
+    if (!money) return this;
+    let result = await db.query(
+      `UPDATE trainers SET money = $1 WHERE name = $2 RETURNING *`,
+      [money, this.name]
+    );
+    this.money = money;
+    return this;
   }
 
-  static async delete({ name }) {
+  static async delete(name) {
     await checkIfDataExists({ table: 'trainers', key: 'name', value: name });
     let result = await db.query(
       `DELETE FROM trainers WHERE name = $1 RETURNING *`,
@@ -88,6 +80,16 @@ class Trainer {
       [this.name]
     );
     return result.rows[0];
+  }
+  async getInventory() {
+    // Function accesses by id.
+    let result = await db.query(
+      `SELECT name, description, price 
+      FROM items i 
+      JOIN trainers t ON (t.$1 = i.owner)`,
+      [this.id]
+    );
+    return result.rows;
   }
 
   // ----- BELOW IS NYI -----

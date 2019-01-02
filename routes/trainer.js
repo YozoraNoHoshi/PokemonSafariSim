@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 // Shows all registered trainers.
 router.get('/', async function(req, res, next) {
   try {
-    let response = await Trainer.all();
+    let response = await Trainer.getAll();
     return res.json(response);
   } catch (error) {
     return next(error);
@@ -18,7 +18,7 @@ router.get('/', async function(req, res, next) {
 router.post('/', async function(req, res, next) {
   try {
     let { name } = req.body;
-    let response = await Trainer.create(name);
+    let response = await Trainer.create({ name, startingMoney: 500 });
     return res.json(response);
   } catch (error) {
     return next(error);
@@ -26,33 +26,31 @@ router.post('/', async function(req, res, next) {
 });
 
 // Gets the details of a specific trainer. Shows their caught Pokemon, name, and money.
-router.get('/:id', async function(req, res, next) {
+router.get('/:name', async function(req, res, next) {
   try {
-    let response = await Trainer.getById(req.params.id);
+    let response = await Trainer.getTrainer(req.params.name);
+    // Needs to show inventory
     return res.json(response);
   } catch (error) {
     return next(error);
   }
 });
 
-// Adds an item to the trainer's inventory. Must have enough money to make the purchase.
-router.post('/:id/buy', async function(req, res, next) {
+// Displays that trainer's inventory
+router.get('/:name/inventory', async function(req, res, next) {
   try {
-    let trainer = await Trainer.getById(req.params.id);
-    let { item, quantity } = req.body;
-    let response = await trainer.buyItem(item, quantity);
-    return res.json(response);
+    let trainer = await Trainer.getTrainer(req.params.name);
+    return res.json(trainer.inventory);
   } catch (error) {
     return next(error);
   }
 });
 
-// Sells an item from the trainer's inventory.
-router.post('/:id/sell', async function(req, res, next) {
+// Buy or Sells an item from the inventory
+router.post('/:name/inventory', async function(req, res, next) {
   try {
-    let trainer = await Trainer.getById(req.params.id);
-    let { item, quantity } = req.body;
-    let response = await trainer.sellItem(item, quantity);
+    let trainer = await Trainer.getTrainer(req.params.name);
+    let response = await trainer.modifyInventory(req.body);
     return res.json(response);
   } catch (error) {
     return next(error);
@@ -60,25 +58,27 @@ router.post('/:id/sell', async function(req, res, next) {
 });
 
 // Edit's a trainer's details.
-router.put('/:id', async function(req, res, next) {
+router.put('/:name', editTrainer);
+router.patch('/:name', editTrainer);
+async function editTrainer(req, res, next) {
   try {
-    let { name, money } = req.body;
+    let { money } = req.body;
 
-    let trainer = await Trainer.getById(req.params.id);
-    if (!name) name = trainer.name;
-    if (!money) money = trainer.money;
-    let response = await trainer.update(name, money);
+    let trainer = await Trainer.getTrainer(req.params.name);
+    trainer.money = money;
+    let response = await trainer.updateMoney();
 
     return res.json(response);
   } catch (error) {
     return next(error);
   }
-});
+}
 
 // Deletes a trainer.
-router.delete('/:id', async function(req, res, next) {
+router.delete('/:name', async function(req, res, next) {
   try {
-    let response = await Trainer.delete(req.params.id);
+    let trainer = await Trainer.getTrainer(req.params.name);
+    let response = await trainer.delete(req.params.name);
     return res.json(response);
   } catch (error) {
     return next(error);

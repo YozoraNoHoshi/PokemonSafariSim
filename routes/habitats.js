@@ -8,8 +8,8 @@ const Habitat = require('../models/habitat');
 // Shows all habitats available
 router.get('/', async function(req, res, next) {
   try {
-    let habitats = Habitat.get();
-    if (habitats.length > 1) {
+    let habitats = Habitat.getAll();
+    if (habitats.length > 0) {
       // process stuff and hand back json of all avail habitats
     } else {
       let results = await axios.get('//PokemonUrl');
@@ -23,9 +23,14 @@ router.get('/', async function(req, res, next) {
 // Shows the pokemon that can be battled within a habitat
 router.get('/:habitat', async function(req, res, next) {
   try {
+    let habitat = Habitat.getHabitat(req.params.habitat);
+    if (habitat.length > 0) {
+      // process stuff and hand back json of all avail habitats
+    } else {
+      let results = await axios.get('//PokemonUrl');
+      return res.json(results);
+    }
     // Get all Pokemon inside the current habitat.
-    let results = await axios.get('//PokemonUrl');
-    return res.json(results);
   } catch (error) {
     return next(error);
   }
@@ -35,8 +40,9 @@ router.get('/:habitat', async function(req, res, next) {
 router.get('/:habitat/battle', async function(req, res, next) {
   try {
     // get the data for a specific pokemon and send it to the user
-    let results = await axios.get('//PokemonUrl');
-    return res.json(results);
+    let habitat = await Habitat.getHabitat(req.params.habitat);
+    let pokemon = await habitat.pickPokemon();
+    return res.json(pokemon);
   } catch (error) {
     return next(error);
   }
