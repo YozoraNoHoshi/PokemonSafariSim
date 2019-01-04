@@ -1,5 +1,4 @@
 const db = require('../db');
-const env = require('../config');
 
 async function checkIfDataExists({ table, key, value }) {
   let result = await db.query(`SELECT * from $1 WHERE $2 = $3`, [
@@ -20,4 +19,7 @@ function errorIfNoResult(resultArray) {
   }
 }
 
-module.exports = { errorIfNoResult, checkIfDataExists };
+module.exports = {
+  errorIfNoResult,
+  checkIfDataExists
+};

@@ -1,24 +1,29 @@
 const db = require('../db');
-const env = require('../config');
+// const env = require('../config');
 const {
   errorIfNoResult,
   checkIfDataExists
 } = require('../helpers/helperFunctions');
+const {
+  pokeAPIHabitatPokemon,
+  pokeAPIGetPokemonData
+} = require('../helpers/routeHelpers');
 
 class Habitat {
-  constructor({ name, weather }) {
+  constructor({ name, weather }, pokemon) {
     this.name = name;
     this.weather = weather;
+    this.pokemon = pokemon || [];
     // Ignore for now
     this.availablePokemon = [];
   }
 
-  static async create({ name, weather }) {
+  static async create({ name, weather }, pokemon) {
     let result = await db.query(
       `INSERT INTO habitats (name, weather) VALUES ($1, $2) RETURNING *`,
       [name, weather]
     );
-    let newHabitat = new Habitat(result.rows[0]);
+    let newHabitat = new Habitat(result.rows[0], pokemon);
     return newHabitat;
   }
 
@@ -35,7 +40,7 @@ class Habitat {
     let result = await db.query(`SELECT * FROM habitats WHERE name = $1`, [
       name
     ]);
-    if (result.rows.length === 0) return [];
+    if (result.rows.length === 0) return;
     let habitat = new Habitat(result.rows[0]);
     return habitat;
   }
@@ -64,7 +69,14 @@ class Habitat {
       this.name
     ]);
     if (result.rows.length === 0) {
-      // use axios to populate database from the pokemon api
+      let promises = this.pokemon.map(p => pokeAPIGetPokemonData(p));
+      let pokemons = await Promise.all(promises);
+
+      let pokemonInstances = pokemons.map(p => {
+        p.habitat = this.name;
+        return Pokemon.create(p);
+      });
+      return await Promise.all(pokemonInstances);
     }
     this.availablePokemon = result.rows;
     return this.availablePokemon;

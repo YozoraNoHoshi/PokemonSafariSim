@@ -1,19 +1,23 @@
 const express = require('express');
-const axios = require('axios');
 const router = new express.Router();
 const Habitat = require('../models/habitat');
+const {
+  pokeAPIGetAllHabitats,
+  pokeAPIGetOneHabitat
+} = require('../helpers/routeHelpers');
 // const jwt = require('jsonwebtoken');
-// const env = require('../config');
+const env = require('../config');
 
 // Shows all habitats available
 router.get('/', async function(req, res, next) {
   try {
-    let habitats = Habitat.getAll();
+    let habitats = await Habitat.getAll();
     if (habitats.length > 0) {
-      // process stuff and hand back json of all avail habitats
+      return res.json(habitats);
     } else {
-      let results = await axios.get('//PokemonUrl');
-      return res.json(results);
+      // Promise.all a bunch of different habitats, punt it to the database after
+      habitats = await pokeAPIGetAllHabitats();
+      return res.json(habitats);
     }
   } catch (error) {
     return next(error);
@@ -23,11 +27,13 @@ router.get('/', async function(req, res, next) {
 // Shows the pokemon that can be battled within a habitat
 router.get('/:habitat', async function(req, res, next) {
   try {
-    let habitat = Habitat.getHabitat(req.params.habitat);
-    if (habitat.length > 0) {
-      // process stuff and hand back json of all avail habitats
+    let habitat = await Habitat.getHabitat(req.params.habitat);
+    if (habitat) {
+      let habitatPokemon = await habitat.getAvailPokemon();
+      return res.json(habitatPokemon);
     } else {
-      let results = await axios.get('//PokemonUrl');
+      // After resolve, punt it into database using habitat static create
+      let results = await pokeAPIGetOneHabitat(req.params.habitat);
       return res.json(results);
     }
     // Get all Pokemon inside the current habitat.
@@ -47,3 +53,5 @@ router.get('/:habitat/battle', async function(req, res, next) {
     return next(error);
   }
 });
+
+module.exports = router;
