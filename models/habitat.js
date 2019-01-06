@@ -8,6 +8,7 @@ const {
   pokeAPIHabitatPokemon,
   pokeAPIGetPokemonData
 } = require('../helpers/routeHelpers');
+const { Pokemon, WildPokemon } = require('./pokemon');
 
 class Habitat {
   constructor({ name, weather }, pokemon) {
@@ -68,22 +69,27 @@ class Habitat {
     let result = await db.query(`SELECT * FROM pokemon WHERE habitat = $1`, [
       this.name
     ]);
+    // If nothing found in the database for this habitat
     if (result.rows.length === 0) {
+      // Gets data for each pokemon name from the pokemon api
       let promises = this.pokemon.map(p => pokeAPIGetPokemonData(p));
       let pokemons = await Promise.all(promises);
 
+      // Creates new pokemon instances and inserts into database and returns it
       let pokemonInstances = pokemons.map(p => {
         p.habitat = this.name;
-        return Pokemon.create(p);
+        return WildPokemon.create(p);
       });
       return await Promise.all(pokemonInstances);
     }
+    // Set the instances avail pokemon to the db query result and return it
     this.availablePokemon = result.rows;
     return this.availablePokemon;
   }
 
   async pickPokemon() {
-    await this.getAvailPokemon();
+    // If there are no available Pokemon then get some, and return a random one
+    if (this.availablePokemon.length === 0) await this.getAvailPokemon();
     let index = Math.floor(Math.random() * this.availablePokemon.length);
     return this.availablePokemon[index];
   }

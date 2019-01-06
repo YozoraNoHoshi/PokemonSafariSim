@@ -36,7 +36,7 @@ async function pokeAPICreateHabitat(habitatData) {
 }
 
 async function pokeAPIGetPokemonData(pokemonSpecies) {
-  // Takes a pokemon name and the data for creating an instance of that pokemon
+  // Takes a pokemon name and returns the data for creating an instance of that pokemon
   let pokeAPI = [
     axios.get(`${env.POKE_API_URL}/pokemon-species/${pokemonSpecies}`),
     axios.get(`${env.POKE_API_URL}/pokemon/${pokemonSpecies}`)
