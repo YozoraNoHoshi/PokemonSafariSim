@@ -3,19 +3,11 @@ const env = require('../config');
 const { buildQuery } = require('../helpers/helperFunctions');
 
 class Pokemon {
-  constructor({
-    name,
-    title,
-    flavorText,
-    frontSprite,
-    frontSpriteF,
-    genderRate
-  }) {
+  constructor({ name, title, flavorText, frontSprite, genderRate }) {
     this.name = name;
     this.title = title;
     this.flavorText = flavorText;
     this.frontSprite = frontSprite;
-    this.frontSpriteF = frontSpriteF;
     this.genderRate = genderRate;
   }
 }
@@ -51,10 +43,9 @@ class WildPokemon extends Pokemon {
     title,
     flavorText,
     frontSprite,
-    frontSpriteF,
     habitat
   }) {
-    super({ name, title, flavorText, frontSprite, frontSpriteF, genderRate });
+    super({ name, title, flavorText, frontSprite, genderRate });
     this.catchRate = catchRate;
     this.habitat = habitat;
   }
@@ -66,22 +57,12 @@ class WildPokemon extends Pokemon {
     title,
     flavorText,
     frontSprite,
-    frontSpriteF,
     habitat
   }) {
     let result = db.query(
-      `INSERT INTO pokemon (name, catch_rate, gender_rate, title, flavor_text, front_sprite, front_sprite_f, habitat) 
-      VALUES ($1, $2, $3, $4, $5, $6,$7,$8) RETURNING *`,
-      [
-        name,
-        catchRate,
-        genderRate,
-        title,
-        flavorText,
-        frontSprite,
-        frontSpriteF,
-        habitat
-      ]
+      `INSERT INTO pokemon (name, catch_rate, gender_rate, title, flavor_text, front_sprite, habitat) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [name, catchRate, genderRate, title, flavorText, frontSprite, habitat]
     );
     let pokemon = result.rows[0];
     return new WildPokemon(pokemon);

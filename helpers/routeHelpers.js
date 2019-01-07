@@ -37,19 +37,25 @@ async function pokeAPICreateHabitat(habitatData) {
 
 async function pokeAPIGetPokemonData(pokemonSpecies) {
   // Takes a pokemon name and returns the data for creating an instance of that pokemon
-  let pokeAPI = [
-    axios.get(`${env.POKE_API_URL}/pokemon-species/${pokemonSpecies}`),
-    axios.get(`${env.POKE_API_URL}/pokemon/${pokemonSpecies}`)
-  ];
-  let pokemonData = await Promise.all(pokeAPI);
 
-  let pokemon = pokemonData[0].data;
-  let { name, capture_rate, gender_rate } = pokemon;
+  // let pokeAPI = [
+  //   axios.get(`${env.POKE_API_URL}/pokemon-species/${pokemonSpecies}`) //,
+  //   // axios.get(`${env.POKE_API_URL}/pokemon/${pokemonSpecies}`)
+  // ];
+
+  // let pokemonData = await Promise.all(pokeAPI);
+  // let pokemonGameData = pokemonData[1].data;
+  // let { front_default, front_female } = pokemonGameData.sprites;
+
+  let pokemonData = axios.get(
+    `${env.POKE_API_URL}/pokemon-species/${pokemonSpecies}`
+  );
+
+  let pokemon = pokemonData.data;
+  let { name, capture_rate, gender_rate, id } = pokemon;
   let title = pokemon.genera[2].genus;
   let flavorText = pokemon.flavor_text_entries[2].flavor_text;
-
-  let pokemonGameData = pokemonData[1].data;
-  let { front_default, front_female } = pokemonGameData.sprites;
+  let front_default = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
 
   // Should return data for creating a Pokemon Instance
   // Needs habitat name attached to it
@@ -59,8 +65,8 @@ async function pokeAPIGetPokemonData(pokemonSpecies) {
     genderRate: gender_rate,
     title,
     flavorText,
-    frontSprite: front_default,
-    frontSpriteF: front_female
+    frontSprite: front_default //,
+    // frontSpriteF: front_female
   };
 }
 
