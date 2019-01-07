@@ -69,7 +69,20 @@ class WildPokemon extends Pokemon {
     frontSpriteF,
     habitat
   }) {
-    let result = db.query(`DB QUERY STUFF RETURNING *`, []);
+    let result = db.query(
+      `INSERT INTO pokemon (name, catch_rate, gender_rate, title, flavor_text, front_sprite, front_sprite_f, habitat) 
+      VALUES ($1, $2, $3, $4, $5, $6,$7,$8) RETURNING *`,
+      [
+        name,
+        catchRate,
+        genderRate,
+        title,
+        flavorText,
+        frontSprite,
+        frontSpriteF,
+        habitat
+      ]
+    );
     let pokemon = result.rows[0];
     return new WildPokemon(pokemon);
   }
