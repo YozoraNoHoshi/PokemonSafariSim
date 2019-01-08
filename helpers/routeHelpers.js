@@ -37,17 +37,7 @@ async function pokeAPICreateHabitat(habitatData) {
 
 async function pokeAPIGetPokemonData(pokemonSpecies) {
   // Takes a pokemon name and returns the data for creating an instance of that pokemon
-
-  // let pokeAPI = [
-  //   axios.get(`${env.POKE_API_URL}/pokemon-species/${pokemonSpecies}`) //,
-  //   // axios.get(`${env.POKE_API_URL}/pokemon/${pokemonSpecies}`)
-  // ];
-
-  // let pokemonData = await Promise.all(pokeAPI);
-  // let pokemonGameData = pokemonData[1].data;
-  // let { front_default, front_female } = pokemonGameData.sprites;
-
-  let pokemonData = axios.get(
+  let pokemonData = await axios.get(
     `${env.POKE_API_URL}/pokemon-species/${pokemonSpecies}`
   );
 
@@ -65,8 +55,7 @@ async function pokeAPIGetPokemonData(pokemonSpecies) {
     genderRate: gender_rate,
     title,
     flavorText,
-    frontSprite: front_default //,
-    // frontSpriteF: front_female
+    frontSprite: front_default
   };
 }
 

@@ -80,7 +80,7 @@ class Habitat {
         p.habitat = this.name;
         return WildPokemon.create(p);
       });
-      return await Promise.all(pokemonInstances);
+      result = { rows: await Promise.all(pokemonInstances) };
     }
     // Set the instances avail pokemon to the db query result and return it
     this.availablePokemon = result.rows;

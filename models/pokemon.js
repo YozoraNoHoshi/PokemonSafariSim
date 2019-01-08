@@ -71,21 +71,13 @@ class WildPokemon extends Pokemon {
   static async createMany(pokemonDataArray) {
     // Returns a list of new pokemon
     // TODO
-    // Build out a db query for inserting data
+    // Build out a query builder for inserting data
     let { query, values } = buildQuery(pokemonDataArray);
     let result = db.query(query, values);
     return result.rows.map(pokeData => {
       return new WildPokemon(pokeData);
     });
   }
-  // Species
-  // https://pokeapi.co/api/v2/pokemon-species/
-  // Habitats
-  // https://pokeapi.co/api/v2/pokemon-habitat/
-
-  // Pal Park Areas
-  // https://pokeapi.co/api/v2/pal-park-area/
-  // Note: pal park areas will use safari style battles - probably do this first
 
   // exportToCaught({ friendship, trainer }) {
   //   return {
