@@ -1,6 +1,5 @@
 const db = require('../db');
 const env = require('../config');
-const { buildQuery } = require('../helpers/helperFunctions');
 
 class Pokemon {
   constructor({ name, title, flavorText, frontSprite, genderRate }) {
@@ -70,13 +69,10 @@ class WildPokemon extends Pokemon {
 
   static async createMany(pokemonDataArray) {
     // Returns a list of new pokemon
-    // TODO
-    // Build out a query builder for inserting data
-    let { query, values } = buildQuery(pokemonDataArray);
-    let result = db.query(query, values);
-    return result.rows.map(pokeData => {
-      return new WildPokemon(pokeData);
+    let pokemons = pokemonDataArray.rows.map(pokeData => {
+      return Pokemon.create(pokeData);
     });
+    return await Promise.all(pokemons);
   }
 
   // exportToCaught({ friendship, trainer }) {

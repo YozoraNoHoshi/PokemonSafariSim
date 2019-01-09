@@ -4,11 +4,8 @@ const {
   errorIfNoResult,
   checkIfDataExists
 } = require('../helpers/helperFunctions');
-const {
-  pokeAPIHabitatPokemon,
-  pokeAPIGetPokemonData
-} = require('../helpers/routeHelpers');
-const { Pokemon, WildPokemon } = require('./pokemon');
+const { pokeAPIGetPokemonData } = require('../helpers/routeHelpers');
+const { WildPokemon } = require('./pokemon');
 
 class Habitat {
   constructor({ name, weather }, pokemon) {
@@ -81,6 +78,7 @@ class Habitat {
         return WildPokemon.create(p);
       });
       result = { rows: await Promise.all(pokemonInstances) };
+      // return this.getAvailPokemon()
     }
     // Set the instances avail pokemon to the db query result and return it
     this.availablePokemon = result.rows;
