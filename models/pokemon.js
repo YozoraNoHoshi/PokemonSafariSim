@@ -67,6 +67,7 @@ class WildPokemon extends Pokemon {
     return new WildPokemon(pokemon);
   }
 
+  // Deprecated, not really needed anymore
   static async createMany(pokemonDataArray) {
     // Returns a list of new pokemon
     let pokemons = pokemonDataArray.rows.map(pokeData => {
